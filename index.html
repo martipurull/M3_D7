@@ -22,7 +22,7 @@
         </div>
     </div>
 
-    <div class="container">
+    <div id="mainContainer" class="container">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="#"><i class="bi bi-people-fill"></i></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -43,6 +43,10 @@
                             <a class="dropdown-item" href="#">username</a>
                             <a class="dropdown-item" href="#">email</a>
                         </div>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-sm btn-secondary ml-5 mt-1"
+                            onclick="displayNames()">display names</button>
                     </li>
                 </ul>
                 <form class="form-inline my-2 my-lg-0">
@@ -144,6 +148,35 @@
                 }
                 dropdownMenu.appendChild(dropdownOption)
             })
+        }
+
+        const displayNames = () => {
+            const mainContainer = document.getElementById('mainContainer')
+            const listOfNamesContainer = document.createElement('div')
+            listOfNamesContainer.classList.add('container')
+            listOfNamesContainer.classList.add('mb-5')
+            mainContainer.appendChild(listOfNamesContainer)
+            const listOfNamesTitle = document.createElement('h6')
+            listOfNamesTitle.innerText = 'Display Names'
+            listOfNamesContainer.appendChild(listOfNamesTitle)
+            const listOfNames = document.createElement('ul')
+            listOfNames.classList.add('list-group')
+            listOfNamesContainer.appendChild(listOfNames)
+            loadedUsers.forEach((user) => {
+                const listItem = document.createElement('li')
+                listItem.classList.add('list-group-item')
+                listItem.innerText = user.name
+                listOfNames.appendChild(listItem)
+            })
+            const clearNamesBtn = document.createElement('button')
+            clearNamesBtn.classList.add('btn')
+            clearNamesBtn.classList.add('btn-sm')
+            clearNamesBtn.classList.add('btn-danger')
+            clearNamesBtn.innerText = 'clear names'
+            clearNamesBtn.addEventListener('click', function () {
+                listOfNamesContainer.innerHTML = ''
+            })
+            listOfNamesContainer.appendChild(clearNamesBtn)
         }
 
         // const filterUsers = () => {
