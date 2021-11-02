@@ -9,6 +9,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
         integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
 
     <title>User Database</title>
 </head>
@@ -23,7 +24,7 @@
 
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#">UD</a>
+            <a class="navbar-brand" href="#"><i class="bi bi-people-fill"></i></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -40,14 +41,15 @@
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" href="#">name</a>
                             <a class="dropdown-item" href="#">username</a>
-                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="#">email</a>
                         </div>
                     </li>
                 </ul>
                 <form class="form-inline my-2 my-lg-0">
-                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    <input id="searchInput" class="form-control mr-sm-2" type="text" placeholder="Search"
+                        aria-label="Search">
+                    <button class="btn btn-outline-dark my-2 my-sm-0" type="submit"
+                        onclick="filterUsers()">Search</button>
                 </form>
             </div>
         </nav>
@@ -55,31 +57,14 @@
         <table class="table table-dark">
             <thead>
                 <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">First</th>
-                    <th scope="col">Last</th>
-                    <th scope="col">Handle</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Email</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                </tr>
-                <tr>
-                    <th scope="row">2</th>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                </tr>
-                <tr>
-                    <th scope="row">3</th>
-                    <td>Larry</td>
-                    <td>the Bird</td>
-                    <td>@twitter</td>
-                </tr>
+
             </tbody>
         </table>
     </div>
@@ -103,22 +88,74 @@
 
     <script>
 
-        let userDatabase = []
+        let loadedUsers = []
+        let dropdownOptions = ["name", "username", "email"]
+        let selectedFilter = "username"
+        let filteredUsers = []
+
+        const loadUsers = async () => {
+            let response = await fetch('https://jsonplaceholder.typicode.com/users')
+            let data = await response.json()
+            loadedUsers = data
+            console.log(loadedUsers)
+            displayTableRows(loadedUsers)
+        }
+
+        const createTableRow = (user) => `
+                <tr>
+                    <th scope="row">${ user.id }</th>
+                    <td>${ user.name }</td>
+                    <td>${ user.username }</td>
+                    <td>${ user.email }</td>
+                </tr>
+            `
+
+        const displayTableRows = (users) => {
+            const tbody = document.querySelector("tbody")
+            tbody.innerHTML = ''
+            users.forEach((user) => {
+                tbody.innerHTML += createTableRow(user)
+            })
+        }
+
+        const changeFilter = (filter) => {
+            selectedFilter = filter
+            const dropdownToggle = document.querySelector('.dropdown-toggle')
+            dropdownToggle.innerText = filter
+        }
+
+        const filterUsers = () => {
+            const searchInput = document.getElementById('searchInput')
+            filteredUsers = loadedUsers.filter((user) => user[selectedFilter].toLowerCase().includes(searchInput.value.toLowerCase()))
+            displayTableRows(filteredUsers)
+        }
+
+        const createDropdownOptions = () => {
+            const dropdownToggle = document.querySelector('.dropdown-toggle')
+            dropdownToggle.innerText = selectedFilter
+            const dropdownMenu = document.querySelector('.dropdown-menu')
+            dropdownMenu.innerHTML = ''
+            dropdownOptions.forEach((option) => {
+                const dropdownOption = document.createElement('a')
+                dropdownOption.className = 'dropdown-item'
+                dropdownOption.innerText = option
+                dropdownOption.onclick = function () {
+                    changeFilter(option)
+                }
+                dropdownMenu.appendChild(dropdownOption)
+            })
+        }
+
+        // const filterUsers = () => {
+        //     filteredUsers = loadedUsers.filter((user) => {
+
+        //     })
+        // }
+
 
         window.onload = () => {
-
-            const loadUsers = async () => {
-                let response = await fetch('https://jsonplaceholder.typicode.com/users')
-                let data = await response.json()
-                userDatabase = data
-                console.log(userDatabase)
-            }
             loadUsers()
-
-
-
-
-
+            createDropdownOptions()
         }
 
 
